@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}详情页{% end %}
+{% block content %}
+post of {{ post_id }} content <br>
+
+<img src="{{ static_url('images/{}.jpg'.format(post_id)) }}" width="500px"/>
+<br>
+
+{% end %}
