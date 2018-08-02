@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}首页{% end %}
 {% block content %}
-首页 content  <br>
+首页 content current_user:{{ current_user}} <br>
 {% for num in range(1,5) %}
 <a href="/post/{{ num }}">
 <img src="{{ static_url('images/{}.jpg'.format( num )) }}" width="500px"/></a>

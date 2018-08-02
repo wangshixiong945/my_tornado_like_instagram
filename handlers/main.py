@@ -1,12 +1,24 @@
 import tornado.web
 from utils import photo
+from pycket.session import SessionMixin
 
-class IndexHandler(tornado.web.RequestHandler):
+class AuthBaseHandler(tornado.web.RequestHandler, SessionMixin):
+    """
+    使用了pycket 来提供 session的 Base
+
+    """
+    def get_current_user(self):
+        return self.session.get('tudo_user', None)
+
+
+class IndexHandler(AuthBaseHandler):
     """
     首页，关注用户的的图片流
     """
+    @tornado.web.authenticated
     def get(self, *args, **kwargs):
         self.render('index.html')
+
 
 
 class ExploreHandler(tornado.web.RequestHandler):
