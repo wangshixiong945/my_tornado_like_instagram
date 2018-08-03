@@ -4,8 +4,6 @@ from models.users import User
 def hashed(text):
     return hashlib.md5(text.encode()).hexdigest()
 
-
-
 def authenticate(username,password):
     """
     校验用户的密码和数据库记录是否匹配
@@ -17,7 +15,6 @@ def authenticate(username,password):
         return hash_pass and hash_pass ==hashed(password)
     else:
         return False
-
 
 def register(username,password):
     if User.is_exists(username):

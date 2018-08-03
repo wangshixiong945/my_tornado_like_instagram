@@ -3,14 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Tornado Title{% end %}</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
-    </style>
+
 </head>
 <body>
+<a href="/explore">发现</a> <a href="/">首页</a> <a href="/upload">上传</a> current_user:{{ current_user}} <a href="/logout">登出</a>
 {% block content %}Default body of base{% end %}
 </body>
 </html>
