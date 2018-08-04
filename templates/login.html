@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}login page{% end %}
+{% block content %}
+<div>
+    <form action="/login" enctype="multipart/form-data" method="post">
+        <div class="form_group">
+            Username
+            <input autofocus="" class="form_control" id="id_username" maxlength="254" name="username" type="text" required="">
+        </div>
+        <div class="form_group">
+            <input  class="form_control" id="id_password"  name="password" type="password" required="">
+        </div>
+        <input type="submit">
+        
+    </form>
+</div>
+{% end %}
+

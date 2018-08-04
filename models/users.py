@@ -46,6 +46,7 @@ class Post(Base):
     __tablename__ = 'posts'
     id = Column(Integer, primary_key=True, autoincrement=True)
     image_url = Column(String(100))
+    thumb_url = Column(String(100))
 
     user_id = Column(Integer, ForeignKey('users.id'),)
     user = relationship('User', backref='posts', uselist=False, cascade='all')

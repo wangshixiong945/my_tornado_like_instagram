@@ -17,17 +17,18 @@ class IndexHandler(AuthBaseHandler):
     """
     @tornado.web.authenticated
     def get(self, *args, **kwargs):
-        posts = photo.get_posts()
+        posts = photo.get_posts_for(self.current_user)
         self.render('index.html', posts=posts)
 
 
-class ExploreHandler(tornado.web.RequestHandler):
+class ExploreHandler(AuthBaseHandler):
     """
     发现页，最新上传的所有图片
     """
+    @tornado.web.authenticated
     def get(self, *args, **kwargs):
-        urls = photo.get_images('uploads/thumbs')
-        self.render('explore.html', urls=urls)
+        posts = photo.get_posts()
+        self.render('explore.html', posts=posts)
 
 
 class PostHandler(AuthBaseHandler):
@@ -51,12 +52,15 @@ class UploadHandler(AuthBaseHandler):
     def post(self, *args, **kwargs):
         img_files = self.request.files.get('newimg',None)
         for img in img_files:
-            print("got {}".format(img['filename']))
-            save_to = 'static/uploads/{}'.format(img['filename'])
-            with open(save_to, 'wb') as f:
-                f.write(img['body'])
-                print(f)
+            # print("got {}".format(img['filename']))
+            im = photo.UploadImage(self.settings['static_path'],img['filename'])
+            im.save_upload(img['body'])
 
-            photo.add_post(self.current_user,save_to)
-            photo.make_thumb(save_to)
+            #save_to = 'static/uploads/{}'.format(img['filename'])
+            # with open(save_to, 'wb') as f:
+            #     f.write(img['body'])
+            #     print(f)
+            im.make_thumb()
+            photo.add_post(self.current_user, im.upload_url,im.thumb_url)
+            # photo.make_thumb(save_to)
         self.redirect('/explore')

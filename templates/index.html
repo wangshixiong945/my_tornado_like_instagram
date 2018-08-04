@@ -2,7 +2,7 @@
 {% block title %}首页{% end %}
 {% block content %}
 首页 content  <br>
-    {% for p in posts %}
-    <a href="/post/{{ p.id }}"><img src="/{{ p.image_url }}" width="500px"/></a>
-    {% end %}
+{% for p in posts %}
+<a href="/post/{{ p.id }}"><img src="{{ static_url(p.image_url) }}" width="500px"/></a>
+{% end %}
 {% end %}

@@ -3,6 +3,6 @@
 {% block content %}
 post of {{ post.id }} content  <br>
 
-<img src="/{{ post.image_url }}" />
+<img src="{{ static_url(post.image_url) }}" />
 
 {% end %}

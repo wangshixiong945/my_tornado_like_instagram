@@ -1,10 +1,9 @@
 {% extends  "base.html" %}
 {% block title %}发现页{% end %}
-{% block content %} explore content <br>
+{% block content %} explore 发现 content <br>
 
-{% for url in urls %}
-
-    <img src="{{ static_url(url) }}" />
+{% for p in posts %}
+<a href="/post/{{ p.id }}"><img src="{{ static_url(p.thumb_url) }}" /></a>
 {% end %}
 
 {% end %}
