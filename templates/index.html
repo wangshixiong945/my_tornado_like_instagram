@@ -1,8 +1,19 @@
 {% extends 'base.html' %}
 {% block title %}首页{% end %}
 {% block content %}
-首页 content  <br>
-{% for p in posts %}
-<a href="/post/{{ p.id }}"><img src="{{ static_url(p.image_url) }}" width="500px"/></a>
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-md-8">
+            首页 content  <br>
+            {% for p in posts %}
+            <a href="/post/{{ p.id }}"><img class="img-fluid" src="{{ static_url(p.image_url) }}" /></a>
+
 {% end %}
+        </div>
+        <div class="col-12 col-md-4">
+            2 of 2
+        </div>
+    </div>
+</div>
+
 {% end %}
