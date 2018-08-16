@@ -60,28 +60,36 @@ class WSocketHandler(tornado.websocket.WebSocketHandler, SessionMixin):
             except:
                 logging.error("Error sending message", exc_info=True)
 
+    @classmethod
+    def make_html(cls, body, sent_by='system',img=''):
+        ret =  {
+            "id": str(uuid.uuid4()),
+            "body": body,
+            "sent_by": sent_by,
+            "img": img,
+        }
+
+        return ret
+
     def on_message(self, message):
         """ WebSocket 服务端接收到消息，自动调用 """
         logging.info("got message %r", message)
         parsed = tornado.escape.json_decode(message)
-        chat = {
-            "id": str(uuid.uuid4()),
-            "body": parsed["body"],
-            "sent_by": self.current_user,
-            "img": '',
-        }
-        if chat['body'].startswith("https://"):
-            save_url = "http://localhost:8000/save?url={}&from=room&user={}".format(chat['body'],self.current_user)
+
+
+        if parsed['body'].startswith("https://"):
+            save_url = "http://localhost:8000/save?url={}&from=room&user={}".format(parsed['body'],self.current_user)
             client = AsyncHTTPClient()
             IOLoop.current().spawn_callback(client.fetch ,save_url, request_timeout=60)
-            chat['body'] = "亲爱的{},你发送的URL: {} 正在处理。".format(self.current_user,parsed['body'])
-            chat['sent_by'] = 'system'
-            chat["html"] = tornado.escape.to_basestring(
-                self.render_string("include/message.html", message=chat))
-            self.write_message(chat)
+            body = "亲爱的{},你发送的URL: {} 正在处理。".format(self.current_user,parsed['body'])
+            chat_msg = WSocketHandler.make_html(body,self.current_user)
+            chat_msg["html"] = tornado.escape.to_basestring(
+                self.render_string("include/message.html", message=chat_msg))
+            self.write_message(chat_msg)
         else:
-            chat["html"] = tornado.escape.to_basestring(
-                self.render_string("include/message.html", message=chat))
+            chat_msg = WSocketHandler.make_html(parsed['body'], self.current_user)
+            chat_msg["html"] = tornado.escape.to_basestring(
+                self.render_string("include/message.html", message=chat_msg))
 
-            WSocketHandler.update_cache(chat)
-            WSocketHandler.send_updates(chat)
+            WSocketHandler.update_cache(chat_msg)
+            WSocketHandler.send_updates(chat_msg)

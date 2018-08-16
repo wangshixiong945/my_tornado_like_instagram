@@ -28,7 +28,7 @@ class AsyncSaveURLHandler(AuthBaseHandler):
         async_client = AsyncHTTPClient()
         print("--{}-start fetch:{}".format(datetime.now(), url))
         resp = yield async_client.fetch(url,request_timeout=60)
-        print(resp.body)
+
         if not resp.body:
             self.write('empty response')
             return
@@ -38,16 +38,14 @@ class AsyncSaveURLHandler(AuthBaseHandler):
         im.make_thumb()
         post = photo.add_post(post_user, im.upload_url, im.thumb_url)
         print("--{}--end fetch:#{}".format(datetime.now(),post.id))
-        chat = {
-            "id": str(uuid.uuid4()),
-            "body": '{} post: {}'.format(post_user,"http://127.0.0.1:8000/post/{}".format(post.id)),
-            "sent_by": 'system',
-            "img": post.thumb_url,
-        }
-        chat["html"] = tornado.escape.to_basestring(
-            self.render_string("include/message.html", message=chat))
-        WSocketHandler.update_cache(chat)
-        WSocketHandler.send_updates(chat)
+
+        body = '{}post: http://127.0.0.1:8000/post/{}'.format(post_user,post.id)
+        chat_msg = WSocketHandler.make_html(body, img=post.thumb_url)
+        chat_msg["html"] = tornado.escape.to_basestring(
+            self.render_string("include/message.html", message=chat_msg))
+
+        WSocketHandler.update_cache(chat_msg)
+        WSocketHandler.send_updates(chat_msg)
         print("message sent!")
 
 
