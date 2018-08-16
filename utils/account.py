@@ -1,5 +1,5 @@
 import hashlib
-from models.users import User
+from models.users import User, session
 
 def hashed(text):
     return hashlib.md5(text.encode()).hexdigest()
@@ -22,3 +22,8 @@ def register(username,password):
     else:
         User.add_user(username,hashed(password))
         return 'ok'
+
+
+def get_user(username):
+    user = session.query(User).filter_by(name=username).first()
+    return user

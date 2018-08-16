@@ -1,7 +1,7 @@
 import glob, os
 import uuid
 from PIL import Image
-from models.users import Post, session, User
+from models.users import Post, session, User, Like
 
 
 class UploadImage(object):
@@ -73,6 +73,7 @@ def add_post(username,image_url,thumb_url):
     post = Post(image_url=image_url, thumb_url=thumb_url, user_id=user.id)
     session.add(post)
     session.commit()
+    return post
 
 def get_posts():
     posts = session.query(Post).all()
@@ -86,3 +87,13 @@ def get_posts_for(username):
 def get_post(post_id):
     post = session.query(Post).filter_by(id=post_id).scalar()
     return post
+
+def get_like_posts(user_id):
+    return session.query(Post).filter(Like.user_id == user_id,
+                                      Post.id == Like.post_id,
+                                      Post.user_id != user_id, ).all()
+
+def get_like_users(post_id):
+    return session.query(User).filter(Like.post_id == post_id,
+                                      User.id == Like.user_id,
+                                       ).all()

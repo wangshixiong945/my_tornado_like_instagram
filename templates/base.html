@@ -11,7 +11,7 @@
 </head>
 <body>
 <div class="container">
-    <div class="row">
+
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
           <a class="navbar-brand" href="/"><i class="fa fa-camera"></i>Tudo 图片</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,7 +31,7 @@
                   <i class="fa fa-cogs"></i> 用户中心
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <a class="dropdown-item" href="#">个人信息</a>
+                  <a class="dropdown-item" href="/profile">个人信息</a>
                   <a class="dropdown-item" href="#">收藏</a>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="#">帮助</a>
@@ -48,9 +48,11 @@
 
           </div>
         </nav>
-  </div>
+
+        {% block content %}Default body of base{% end %}
+
 </div>
-{% block content %}Default body of base{% end %}
+
 
 
 <!-- jQuery文件 -->
@@ -59,5 +61,6 @@
 <script src="{{ static_url('js/popper.min.js') }}"></script>
 <!-- Bootstrap 核心 JavaScript 文件 -->
 <script src="{{ static_url('js/bootstrap.js') }}"></script>
+{% block extra_scripts %}{% end %}
 </body>
 </html>

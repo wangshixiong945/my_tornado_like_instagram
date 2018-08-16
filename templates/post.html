@@ -4,5 +4,15 @@
 post of {{ post.id }} content  <br>
 
 <img src="{{ static_url(post.image_url) }}" />
-
+<div class="row" >
+    <div class="col">
+        <span class="h4">由 <a href="/profile?name={{ post.user.name}}">{{ post.user.name}} </a>用户上传</span>
+    {% if users %}
+        <span class="h4">标记喜欢的用户 ({{ len(users)}})：</span>
+        {% for u in users %}
+        <a href="/profile?name={{ u.name }}">{{ u.name }}</a>
+        {% end %}
+    {% end %}
+    </div>
+</div>
 {% end %}
