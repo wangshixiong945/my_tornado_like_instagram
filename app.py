@@ -19,7 +19,7 @@ class Application(tornado.web.Application):
             ('/logout',auth.LogoutHandler),
             ('/signup',auth.SignupHandler),
             ('/room',chat.RoomHandler),
-            ('/ws',chat.ChatSocketHandler),
+            ('/ws',chat.WSocketHandler),
             ('/save',service.AsyncSaveURLHandler),
         ]
         settings = dict(

@@ -5,8 +5,11 @@ import tornado.escape
 import tornado.web
 import tornado.websocket
 import uuid
-
+from pycket.session import SessionMixin
+from tornado.httpclient import AsyncHTTPClient
 from .main import AuthBaseHandler
+from tornado.ioloop import IOLoop
+
 
 class RoomHandler(AuthBaseHandler):
     """
@@ -14,17 +17,18 @@ class RoomHandler(AuthBaseHandler):
     """
     @tornado.web.authenticated
     def get(self):
-        self.render("room.html", messages=ChatSocketHandler.msg_list_cache)
+        self.render("room.html", messages=WSocketHandler.msg_list_cache)
 
 
-class ChatSocketHandler(tornado.websocket.WebSocketHandler):
+class WSocketHandler(tornado.websocket.WebSocketHandler, SessionMixin):
     """
     处理websocket请求和响应，ws客户端连接  /ws 接口
     """
     waiters = set()    # 等待接收信息的用户
     msg_list_cache = []         # 存放消息
     cache_size = 200   # 消息列表的大小
-
+    def get_current_user(self):
+        return self.session.get('tudo_user', None)
     def get_compression_options(self):
         """ 非 None 的返回值开启压缩 """
         return {}
@@ -32,11 +36,11 @@ class ChatSocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         """ 新的WebSocket连接打开，自动调用 """
         logging.info("new connection %s" % self)
-        ChatSocketHandler.waiters.add(self)
+        WSocketHandler.waiters.add(self)
 
     def on_close(self):
         """ WebSocket连接断开，自动调用 """
-        ChatSocketHandler.waiters.remove(self)
+        WSocketHandler.waiters.remove(self)
         logging.info("connection close %s" % self)
 
     @classmethod
@@ -63,9 +67,21 @@ class ChatSocketHandler(tornado.websocket.WebSocketHandler):
         chat = {
             "id": str(uuid.uuid4()),
             "body": parsed["body"],
+            "sent_by": self.current_user,
+            "img": '',
         }
-        chat["html"] = tornado.escape.to_basestring(
-            self.render_string("message.html", message=chat))
+        if chat['body'].startswith("https://"):
+            save_url = "http://localhost:8000/save?url={}&from=room&user={}".format(chat['body'],self.current_user)
+            client = AsyncHTTPClient()
+            IOLoop.current().spawn_callback(client.fetch ,save_url, request_timeout=60)
+            chat['body'] = "亲爱的{},你发送的URL: {} 正在处理。".format(self.current_user,parsed['body'])
+            chat['sent_by'] = 'system'
+            chat["html"] = tornado.escape.to_basestring(
+                self.render_string("include/message.html", message=chat))
+            self.write_message(chat)
+        else:
+            chat["html"] = tornado.escape.to_basestring(
+                self.render_string("include/message.html", message=chat))
 
-        ChatSocketHandler.update_cache(chat)
-        ChatSocketHandler.send_updates(chat)
+            WSocketHandler.update_cache(chat)
+            WSocketHandler.send_updates(chat)
