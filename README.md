@@ -13,6 +13,7 @@ Instagram 主要组成
   Virtualenv + pip
   命令行：xshell
   版本控制管理：git
+  
 思路：
   从最简单开始，迭代增加功能
   用户，登陆，关注等
